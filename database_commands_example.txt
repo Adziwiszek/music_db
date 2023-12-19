@@ -1,0 +1,8 @@
+py cli.py bands add --name="Arctic Monkeys"
+py cli.py bands delete --id=4
+py cli.py bands add --name="The Beatles"
+py cli.py albums add --name="Rubber Soul" --ryear="1966" --band_name="The Beatles"
+py cli.py ratings add --rating=69 --album_name="Rubber Soul"
+py cli.py albums add --name="Abbey Road" --ryear="1969" --band_name="The Beatles"
+py cli.py albums update --column="release_year" --new_value="2004" --condition_col="name" --condition_val="Abbey Road"
+py cli.py bands show
