@@ -8,7 +8,12 @@ def add_entry(values, table, db):
     db.add_entry(table_name=table,values=values)
     
 def show_entries(table, db):
-    db.display_table(table)
+    res = db.display_table(table)
+    print(res)
+
+def get_entry(table, db, id):
+    res = db.get_entry(table,id)
+    print(res)
 
 def delete_entry(table, db, id):
     db.delete_by_id(table_name=table, del_id=id)
@@ -68,13 +73,16 @@ def main():
         else:
             print(f"There's no table {tab}!")
     elif args.action == 'show':
-        if args.api:
-            if args.id is not None:
+        if args.id is not None:
+            if args.api:
                 test_client.api_get_by_id(base_url=server_url,id=args.id)
             else:
-                test_client.get_table(base_url=server_url, table_name=tab)
+                get_entry(table=tab, db=db, id=args.id)
         else:
-            show_entries(table=tab, db=db)
+            if args.api:
+                test_client.api_get_table(base_url=server_url, table_name=tab)
+            else:
+                show_entries(table=tab, db=db)
     elif args.action == 'delete':
         delete_entry(table=tab, db=db, id=args.id)
     elif args.action == 'update':

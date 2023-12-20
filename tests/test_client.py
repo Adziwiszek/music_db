@@ -19,7 +19,7 @@ def api_get_by_id(base_url, id):
     except requests.RequestException as e:
         print(f"Error making API request: {e}")
         
-def get_table(base_url, table_name):
+def api_get_table(base_url, table_name):
     target_url = urljoin(base_url, f"{table_name}")
     print(f'connecting to {target_url}')
     try:

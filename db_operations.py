@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Session
 from sqlalchemy import inspect, insert, update, text
+from flask import jsonify
 import json
 
 class Base(DeclarativeBase):
@@ -30,12 +31,36 @@ class Database():
         else:
             return None
     
+    def get_table_columns(self, table_name):
+        table_mapping = {
+            "bands": ['id', 'name'],
+            "albums": ['id', 'name', 'release_year', 'band_id'],
+            "Ratings": ['id', 'album_id', 'value']
+        }
+        if table_name in table_mapping.keys():
+            return table_mapping[table_name]
+        else:
+            return print(f'There is no such table, ({table_name})')
+    
+    def get_entry(self, table_name, id):
+        target_table = self.get_table(table_name=table_name)
+        if target_table:
+            target_entry = self.session.query(target_table).filter_by(id=id).first()
+            target_table_cols = self.get_table_columns(table_name=table_name)
+            if target_entry:
+                target_data = {column: getattr(target_entry, column) \
+                    for column in target_table_cols}
+                json_data = json.dumps(target_data)
+                return json_data
+            else:
+                return print(f'there is no item with id ({id}) in the database')
+        else:
+            return print(f'there is no ({table_name}) table in the database')
+    
     def display_table(self, table_name):
         print(f'Displaying {table_name} table')
-        # Convert the table name to lowercase
         table_name_lower = table_name.lower()
 
-        # Use the Table class to dynamically create a reference to the table
         table = Table(table_name_lower, Base.metadata, autoload_with=self.engine)
 
         q_all = self.session.query(table).all()

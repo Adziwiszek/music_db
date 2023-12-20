@@ -13,13 +13,8 @@ def wyklad():
 
 @app.route('/bands/<int:id>', methods=['GET'])
 def get_band(id):
-    #print(f"given id: {id}")
-    band_res = db.session.query(db_operations.Band).filter_by(id=id).first()
-    print(band_res)
-    if band_res:
-        return jsonify({'id': band_res.id, 'name': band_res.name})
-    else:
-        return jsonify({'error_message': 'there is no such object'})
+    json_res = db.get_entry(table_name='bands',id=id)
+    return json_res
     
 @app.route('/<string:table_name>', methods=['GET'])
 def get_table(table_name):
