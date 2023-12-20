@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Session
 from sqlalchemy import inspect, insert, update, text
+import json
 
 class Base(DeclarativeBase):
     pass
@@ -17,6 +18,17 @@ class Database():
         self.engine = create_engine('sqlite:///music_database.db', echo=False)
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
+    
+    def get_table(self, table_name):
+        table_mapping = {
+        'bands': Band,
+        'ratings': Rating,
+        'albums': Album,
+        }
+        if table_name in table_mapping.keys():
+            return table_mapping[table_name]
+        else:
+            return None
     
     def display_table(self, table_name):
         print(f'Displaying {table_name} table')
@@ -32,10 +44,16 @@ class Database():
             print(f"No records found in {table_name}.")
             return
 
+        json_data_list = []
         columns = table.columns.keys()
         for row in q_all:
             row_data = {column: getattr(row, column) for column in columns}
-            print(row_data)
+            json_data_list.append(row_data)
+            #print(type(row_data))
+            #print(row_data)
+        json_data = json.dumps(json_data_list, indent=2)
+        #print(json_data)
+        return json_data
             
     def add_entry(self, table_name, values):
         # Convert the table name to lowercase
@@ -61,7 +79,7 @@ class Database():
             if values[col] == None:
                 print(f"Couldn't add entry to the database, ({col}) is missing!")
                 return
-        
+            
         # Automatically determine band_id, used when adding albums
         if 'band_id' in values and 'band_name' in values:
             print("Error: Both 'band_id' and 'band_name' provided. Please provide only one.")

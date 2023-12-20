@@ -1,14 +1,32 @@
 import socket
 import requests
+from urllib.parse import urljoin
 
-res = requests.get("http://localhost:5000/osoba/123")
-print(res.json())
-res = requests.put("http://localhost:5000/osoba")
-print(res.json())
+# def api_get_by_id(id):
+#     target_url = "http://localhost:5000/bands/"
+#     target_url = target_url + str(id)
+#     res = requests.get(target_url)
+#     print(res.json())
 
-# port = 8081
-# host = "localhost"
-# s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-# message = 'Hello Python!!!'
-# mes_bytes = message.encode('utf-8')
-# s.sendto(mes_bytes, (host, port))
+# for future use
+def api_get_by_id(base_url, id):
+    target_url = urljoin(base_url, f"bands/{id}")
+    print(f'connecting to {target_url}')
+    try:
+        res = requests.get(target_url)
+        res.raise_for_status()  # Raise an HTTPError for bad responses
+        print(res.json())
+    except requests.RequestException as e:
+        print(f"Error making API request: {e}")
+        
+def get_table(base_url, table_name):
+    target_url = urljoin(base_url, f"{table_name}")
+    print(f'connecting to {target_url}')
+    try:
+        res = requests.get(target_url)
+        res.raise_for_status()  # Raise an HTTPError for bad responses
+        print(res.json())
+    except requests.RequestException as e:
+        print(f"Error making API request: {e}")
+    
+#api_get_by_id(1)

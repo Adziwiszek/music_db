@@ -1,5 +1,8 @@
 import argparse
 import db_operations
+from tests import test_client 
+
+server_url = "http://localhost:5000/"
 
 def add_entry(values, table, db):
     db.add_entry(table_name=table,values=values)
@@ -22,7 +25,8 @@ def main():
     parser.add_argument('table', nargs=1, type=str)
     subparsers = parser.add_subparsers(title='Actions', dest='action', 
                                        required=True, help='Available actions')  
-
+    parser.add_argument('--api', help='specifies if user wants to use api or not', \
+        action='store_true')
     parser_add = subparsers.add_parser('add', help='add an entry')
     parser_add.add_argument('--ryear', type=str, help='release year of an album (in str format)')
     parser_add.add_argument('--band_name', type=str, help='name of a band')
@@ -40,6 +44,7 @@ def main():
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
     
     parser_show = subparsers.add_parser('show', help='displays a table')
+    parser_show.add_argument('--id', help='id of an entry', type=int)
     
     args = parser.parse_args()
     
@@ -63,7 +68,13 @@ def main():
         else:
             print(f"There's no table {tab}!")
     elif args.action == 'show':
-        show_entries(table=tab, db=db)
+        if args.api:
+            if args.id is not None:
+                test_client.api_get_by_id(base_url=server_url,id=args.id)
+            else:
+                test_client.get_table(base_url=server_url, table_name=tab)
+        else:
+            show_entries(table=tab, db=db)
     elif args.action == 'delete':
         delete_entry(table=tab, db=db, id=args.id)
     elif args.action == 'update':
