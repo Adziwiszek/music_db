@@ -30,7 +30,7 @@ class Database():
             return table_mapping[table_name]
         else:
             return None
-    
+        
     def get_table_columns(self, table_name):
         table_mapping = {
             "bands": ['id', 'name'],
@@ -57,7 +57,7 @@ class Database():
         else:
             return print(f'there is no ({table_name}) table in the database')
     
-    def display_table(self, table_name):
+    def display_table(self, table_name, return_json=True):
         print(f'Displaying {table_name} table')
         table_name_lower = table_name.lower()
 
@@ -77,8 +77,11 @@ class Database():
             #print(type(row_data))
             #print(row_data)
         json_data = json.dumps(json_data_list, indent=2)
-        #print(json_data)
-        return json_data
+        if return_json:
+            return json_data    
+        else:
+            print(json_data_list)
+        
             
     def add_entry(self, table_name, values):
         # Convert the table name to lowercase
@@ -184,6 +187,28 @@ class Database():
         else:
             print(f"There's no table ({table_name})")
 
+    def delete_entry(self, table_name, column_name, value_to_delete):
+        target_table = self.get_table(table_name)
+        if target_table:
+            try:
+                query = self.session.query(target_table)
+                query = query.filter(getattr(target_table, column_name) == value_to_delete)
+                
+                # Execute the delete operation
+                query.delete()
+
+                # Commit changes to the database
+                self.session.commit()
+
+                print(f"Entry with {column_name}={value_to_delete} deleted successfully.")
+            except Exception as e:
+                # Handle exceptions (e.g., SQLAlchemyError, IntegrityError) appropriately
+                print(f"Error deleting entry: {e}")
+                self.session.rollback()
+        else:
+            print("Couldn't delete the entry!")
+
+    
 class Rating(Base):
     __tablename__ = 'ratings'
     id = Column(Integer, primary_key=True)

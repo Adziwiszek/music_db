@@ -20,9 +20,9 @@ def api_add_entry(base_url, table_url, values, id=None):
     except requests.RequestException as e:
         print(f"Error making API request: {e}")
 
+def api_delete_entry(base_url, table_url, del_id=None, criteria=None):
+    ...
 
-
-# for future use
 def api_get_by_id(base_url, id):
     target_url = urljoin(base_url, f"bands/{id}")
     print(f'connecting to {target_url}')

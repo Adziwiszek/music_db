@@ -15,8 +15,8 @@ def get_entry(table, db, id):
     res = db.get_entry(table,id)
     print(res)
 
-def delete_entry(table, db, id):
-    db.delete_by_id(table_name=table, del_id=id)
+def delete_entry(table, db, column, value):
+    db.delete_entry(table_name=table, column_name=column, value_to_delete=value)
 
 def update_entry(db, table, column_name, new_value,conditions):
     db.update_entry(table_name=table, column_name=column_name, 
@@ -47,6 +47,8 @@ def main():
     
     parser_delete = subparsers.add_parser('delete', help='delete an entry (currently only by giving its id)')
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
+    parser_delete.add_argument('--column')
+    parser_delete.add_argument('--value')
     
     parser_show = subparsers.add_parser('show', help='displays a table')
     parser_show.add_argument('--id', help='id of an entry', type=int)
@@ -87,7 +89,11 @@ def main():
             else:
                 show_entries(table=tab, db=db)
     elif args.action == 'delete':
-        delete_entry(table=tab, db=db, id=args.id)
+        if args.api:
+            ...
+        else:
+            delete_entry('bands', column_name=args.column, value_to_delete=args.value)
+        
     elif args.action == 'update':
         conditions = {args.condition_col:args.condition_val}
         update_entry(db=db, table=tab,
