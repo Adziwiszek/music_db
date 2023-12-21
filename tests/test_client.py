@@ -8,13 +8,27 @@ from urllib.parse import urljoin
 #     res = requests.get(target_url)
 #     print(res.json())
 
+def api_add_entry(base_url, table_url, values, id=None):
+    url = None
+    url = urljoin(base_url, f"{table_url}")
+    print(f"connecting to url: {url}")
+    try:
+        print(values)
+        res = requests.post(url, data=values)
+        res.raise_for_status() 
+        print(res.json())
+    except requests.RequestException as e:
+        print(f"Error making API request: {e}")
+
+
+
 # for future use
 def api_get_by_id(base_url, id):
     target_url = urljoin(base_url, f"bands/{id}")
     print(f'connecting to {target_url}')
     try:
         res = requests.get(target_url)
-        res.raise_for_status()  # Raise an HTTPError for bad responses
+        res.raise_for_status() 
         print(res.json())
     except requests.RequestException as e:
         print(f"Error making API request: {e}")

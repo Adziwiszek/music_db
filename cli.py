@@ -57,21 +57,24 @@ def main():
     if args.action == '--help':
         print('asgvjhbk')
     if args.action == 'add':
-        #parser_add.print_help()
+        # setting values dictionary for add function
+        values = {}
         if tab == 'bands':
             values = {'name':args.band_name}
-            add_entry(values=values,table=tab,db=db)
         elif tab == 'albums':
             values = {'name':args.album_name, 
-                      'release_year':args.ryear, 
-                      'band_name':args.band_name}
-            add_entry(values=values,table=tab,db=db)
+                    'release_year':args.ryear, 
+                    'band_name':args.band_name}
         elif tab == 'ratings':
-            values = {'value': args.rating, 
-                      'album_name':args.album_name}
-            add_entry(values=values,table=tab,db=db)
+             values = {'value': args.rating, 
+                    'album_name':args.album_name}
         else:
             print(f"There's no table {tab}!")
+        # executing the add function
+        if args.api:
+            test_client.api_add_entry(base_url=server_url, values=values, table_url=tab) 
+        else:
+            add_entry(values=values,table=tab,db=db)         
     elif args.action == 'show':
         if args.id is not None:
             if args.api:

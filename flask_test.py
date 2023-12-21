@@ -7,6 +7,19 @@ db = None
 def main():
     return "<p>Kurs programowania w Pythonie</p>"
 
+#TODO 
+#1) add "Create" function to server,
+#   
+
+@app.route("/<string:table_name>", methods=['POST'])
+def add_band(table_name):
+    try:
+        data = request.form.to_dict()
+        db.add_entry(table_name,data)
+        return jsonify(f'added: {data}')
+    except Exception as e:
+        return jsonify({'error': e})
+
 @app.route("/wyklad12")
 def wyklad():
     return "<p>Usługi sieciowe</p>"
@@ -21,12 +34,6 @@ def get_table(table_name):
     #print(f"given table name: {table_name}")
     json_res = db.display_table(table_name=table_name)
     return json_res
-    
-
-@app.route('/osoba/', methods=['PUT'])
-def new_osoba(ide):
-    print(f"nowa osoba {ide}")
-    return jsonify({'msg': ide})
 
 if __name__ == "__main__":
     db = db_operations.Database()
