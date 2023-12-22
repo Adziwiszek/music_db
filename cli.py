@@ -47,8 +47,8 @@ def main():
     
     parser_delete = subparsers.add_parser('delete', help='delete an entry (currently only by giving its id)')
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
-    parser_delete.add_argument('--column')
-    parser_delete.add_argument('--value')
+    parser_delete.add_argument('--column', help='entries with given values in this column will be deleted')
+    parser_delete.add_argument('--value', help='entries with this value in specified column will be deleted')
     
     parser_show = subparsers.add_parser('show', help='displays a table')
     parser_show.add_argument('--id', help='id of an entry', type=int)
@@ -59,7 +59,7 @@ def main():
     if args.action == '--help':
         print('asgvjhbk')
     if args.action == 'add':
-        # setting values dictionary for add function
+        # setting values dictionary for add method
         values = {}
         if tab == 'bands':
             values = {'name':args.band_name}
@@ -90,10 +90,9 @@ def main():
                 show_entries(table=tab, db=db)
     elif args.action == 'delete':
         if args.api:
-            ...
+            test_client.api_delete_entry_by_id(base_url=server_url, table_url=tab, id=args.id)
         else:
-            delete_entry('bands', column_name=args.column, value_to_delete=args.value)
-        
+            delete_entry('bands', column_name=args.column, value_to_delete=args.value)    
     elif args.action == 'update':
         conditions = {args.condition_col:args.condition_val}
         update_entry(db=db, table=tab,

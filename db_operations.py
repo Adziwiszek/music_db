@@ -81,8 +81,7 @@ class Database():
             return json_data    
         else:
             print(json_data_list)
-        
-            
+               
     def add_entry(self, table_name, values):
         # Convert the table name to lowercase
         table_name_lower = table_name.lower()
@@ -181,11 +180,11 @@ class Database():
             if to_delete:
                 self.session.delete(to_delete)
                 self.session.commit()
-                print(f"Deleted an entry with id: {del_id} in table ({table_name})")
+                return f"Deleted an entry with id: {del_id} in table ({table_name})"
             else:
-                print(f"There's no entry with id: {del_id} in table ({table_name})")
+                return f"There's no entry with id: {del_id} in table ({table_name})"
         else:
-            print(f"There's no table ({table_name})")
+            return f"There's no table ({table_name})"
 
     def delete_entry(self, table_name, column_name, value_to_delete):
         target_table = self.get_table(table_name)
