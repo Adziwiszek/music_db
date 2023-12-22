@@ -24,7 +24,7 @@ def update_entry(db, table, values):
     res = db.update_entry(table_name=table, values=values)
     print(res)
 
-    
+# used to get arguments with argparse from command line   
 def get_table_columns(tab, args, update=False):
     values = {}
     if tab == 'bands':
@@ -81,7 +81,7 @@ def main():
     
     tab = args.table[0]
     if args.action == '--help':
-        print('asgvjhbk')
+        print('help please:()')
     if args.action == 'add':
         # setting values dictionary for add method
         values = get_table_columns(tab, args)

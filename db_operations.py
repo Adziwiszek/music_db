@@ -145,7 +145,6 @@ class Database():
         else:
             print(f'There is no album ({a_name}) in the database')
             
-    # , column_name, conditions, new_value
     def update_entry(self, table_name, values):
         if not inspect(self.engine).has_table(table_name.lower()):
             print(f'Table ({table_name}) does not exist.')

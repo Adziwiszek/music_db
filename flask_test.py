@@ -8,8 +8,7 @@ db = None
 def main():
     return "<p>Your favourite music library xd</p>"
 
-#TODO 
-
+# CREATE
 @app.route("/<string:table_name>", methods=['POST'])
 def add_entry(table_name):
     if request.method == 'POST':
@@ -20,6 +19,7 @@ def add_entry(table_name):
         except Exception as e:
             return jsonify({'error': e})
 
+# DELETE
 @app.route('/<string:table_name>/<int:id>', methods=['DELETE'])
 def delete_entry_by_id(table_name, id):
     if request.method == 'DELETE':
@@ -28,17 +28,20 @@ def delete_entry_by_id(table_name, id):
             return jsonify({'message': res_message})
         except:
             return f"Error while deleting an entry with id: {id} in table: {table_name}"
-        
+
+# READ
 @app.route('/<string:table_name>/<int:id>', methods=['GET'])
 def get_entry_by_id(table_name, id):
     json_res = db.get_entry(table_name=table_name,id=id)
     return json_res
-    
+
+# READ
 @app.route('/<string:table_name>', methods=['GET'])
 def get_table(table_name):
     json_res = db.display_table(table_name=table_name)
     return json_res
 
+# UPDATE
 @app.route('/<string:table_name>', methods=['PUT'])
 def update_entry(table_name):
     if request.method == 'PUT':
