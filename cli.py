@@ -21,8 +21,6 @@ def delete_entry(table, db, column, value):
     print(res)
 
 def update_entry(db, table, values):
-    # db.update_entry(table_name=table, column_name=column_name, 
-    #                 new_value=new_value, conditions=conditions)
     res = db.update_entry(table_name=table, values=values)
     print(res)
 
@@ -110,7 +108,10 @@ def main():
             delete_entry('bands', column_name=args.column, value_to_delete=args.value)    
     elif args.action == 'update':
         values = get_table_columns(tab, args, update=True)
-        update_entry(db,tab,values)
+        if args.api:
+            test_client.api_update_entry(base_url=server_url, values=values, table_url=tab) 
+        else:
+            update_entry(db,tab,values)
     else:
         print(f"There's no such action as {args.action}!!")
     db.session.close()

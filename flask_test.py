@@ -39,9 +39,15 @@ def get_table(table_name):
     json_res = db.display_table(table_name=table_name)
     return json_res
 
-@app.route('/<string:table_name>/', methods=['GET'])
-def update_entry():
-    ...
+@app.route('/<string:table_name>', methods=['PUT'])
+def update_entry(table_name):
+    if request.method == 'PUT':
+        try:
+            data = request.form.to_dict()
+            res_message = db.update_entry(table_name,data)
+            return jsonify(res_message)
+        except Exception as e:
+            return jsonify({'error': e})
 
 
 if __name__ == "__main__":

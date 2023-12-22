@@ -2,12 +2,6 @@ import socket
 import requests
 from urllib.parse import urljoin
 
-# def api_get_by_id(id):
-#     target_url = "http://localhost:5000/bands/"
-#     target_url = target_url + str(id)
-#     res = requests.get(target_url)
-#     print(res.json())
-
 def api_add_entry(base_url, table_url, values):
     url = urljoin(base_url, f"{table_url}")
     print(f"connecting to url: {url}")
@@ -48,6 +42,12 @@ def api_get_table(base_url, table_name):
     except requests.RequestException as e:
         print(f"Error making API request: {e}")
 
-def api_update_entry():
-    ...
-#api_get_by_id(1)
+def api_update_entry(base_url, table_url, values):
+    url = urljoin(base_url, f"{table_url}")
+    print(f"connecting to url: {url}")
+    try:
+        res = requests.put(url, data=values)
+        res.raise_for_status() 
+        print(res.json())
+    except requests.RequestException as e:
+        print(f"Error making API request: {e}")
