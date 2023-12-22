@@ -59,9 +59,12 @@ class Database():
     
     def display_table(self, table_name, return_json=True):
         print(f'Displaying {table_name} table')
+        
         table_name_lower = table_name.lower()
-
         table = Table(table_name_lower, Base.metadata, autoload_with=self.engine)
+        # table = self.get_table(table_name)
+        # if table is None:
+        #     return f"There is no {table_name} table in the database!!"
 
         q_all = self.session.query(table).all()
 
@@ -80,7 +83,7 @@ class Database():
         if return_json:
             return json_data    
         else:
-            print(json_data_list)
+            return json_data_list
                
     def add_entry(self, table_name, values):
         # Convert the table name to lowercase
@@ -120,8 +123,7 @@ class Database():
         if 'album_name' in values and 'value' in values:
             # I tried having some smart way to go about this 
             # but couldn't figure it out, so I just left the old method here
-            self.add_rating(a_name=values['album_name'],value=values['value'])
-            return
+            return self.add_rating(a_name=values['album_name'],value=values['value'])
         
         # Create and add the entry
         table = Table(table_name_lower, Base.metadata, autoload_with=self.engine)
@@ -141,9 +143,9 @@ class Database():
             rating = Rating(album=album, value=value)
             self.session.add_all([rating])
             self.session.commit()
-            print(f'added rating of ({value}) for ({a_name}) to the database')
+            return f'added rating of ({value}) for ({a_name}) to the database'
         else:
-            print(f'There is no album ({a_name}) in the database')
+            return f'There is no album ({a_name}) in the database'
             
     def update_entry(self, table_name, values):
         if not inspect(self.engine).has_table(table_name.lower()):
@@ -159,7 +161,7 @@ class Database():
                     setattr(entry_to_update, key, value)
             self.session.commit()
             #updated_entry_id = values['id'
-            return f"Updated entry in tabl: {table_name}"
+            return f"Updated entry in table: {table_name}"
         else:
             return "There is no such entry!!"
 

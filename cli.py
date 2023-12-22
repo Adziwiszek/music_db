@@ -1,6 +1,6 @@
 import argparse
 import db_operations
-from tests import test_client 
+from src import client 
 
 server_url = "http://localhost:5000/"
 
@@ -38,12 +38,13 @@ def get_table_columns(tab, args, update=False):
             'album_name':args.album_name}
     else:
         return f"There's no table {tab}!"
-    if args.id is not None and update:
-        values['id'] = args.id
-        return values
-    elif update:
-        print(f"Missing id!!")
-        return
+    if update:
+        if args.id is not None:
+            values['id'] = args.id
+            return values
+        else:
+            print(f"Missing id!!")
+            return
     return values
 
 def main():
@@ -71,8 +72,8 @@ def main():
 
     parser_delete = subparsers.add_parser('delete', help='delete an entry (currently only by giving its id)')
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
-    parser_delete.add_argument('--column', help='entries with given values in this column will be deleted')
-    parser_delete.add_argument('--value', help='entries with this value in specified column will be deleted')
+    #parser_delete.add_argument('--column', help='entries with given values in this column will be deleted')
+    #parser_delete.add_argument('--value', help='entries with this value in specified column will be deleted')
     
     parser_show = subparsers.add_parser('show', help='displays a table')
     parser_show.add_argument('--id', help='id of an entry', type=int)
@@ -87,29 +88,29 @@ def main():
         values = get_table_columns(tab, args)
         # executing the add function
         if args.api:
-            test_client.api_add_entry(base_url=server_url, values=values, table_url=tab) 
+            client.api_add_entry(base_url=server_url, values=values, table_url=tab) 
         else:
             add_entry(values=values,table=tab,db=db)         
     elif args.action == 'show':
         if args.id is not None:
             if args.api:
-                test_client.api_get_by_id(base_url=server_url,id=args.id)
+                client.api_get_by_id(base_url=server_url,id=args.id)
             else:
                 get_entry(table=tab, db=db, id=args.id)
         else:
             if args.api:
-                test_client.api_get_table(base_url=server_url, table_name=tab)
+                client.api_get_table(base_url=server_url, table_name=tab)
             else:
                 show_entries(table=tab, db=db)
-    elif args.action == 'delete':
+    elif args.action == 'delete': # currently only deleting by id is supported
         if args.api:
-            test_client.api_delete_entry_by_id(base_url=server_url, table_url=tab, id=args.id)
+            client.api_delete_entry_by_id(base_url=server_url, table_url=tab, id=args.id)
         else:
-            delete_entry('bands', column_name=args.column, value_to_delete=args.value)    
+            delete_entry('bands', column_name='id', value_to_delete=args.id)    
     elif args.action == 'update':
         values = get_table_columns(tab, args, update=True)
         if args.api:
-            test_client.api_update_entry(base_url=server_url, values=values, table_url=tab) 
+            client.api_update_entry(base_url=server_url, values=values, table_url=tab) 
         else:
             update_entry(db,tab,values)
     else:

@@ -32,14 +32,16 @@ def delete_entry_by_id(table_name, id):
 # READ
 @app.route('/<string:table_name>/<int:id>', methods=['GET'])
 def get_entry_by_id(table_name, id):
-    json_res = db.get_entry(table_name=table_name,id=id)
-    return json_res
+    if request.method == 'GET':
+        json_res = db.get_entry(table_name=table_name,id=id)
+        return json_res
 
 # READ
 @app.route('/<string:table_name>', methods=['GET'])
 def get_table(table_name):
-    json_res = db.display_table(table_name=table_name)
-    return json_res
+    if request.method == 'GET':
+        json_res = db.display_table(table_name=table_name)
+        return json_res
 
 # UPDATE
 @app.route('/<string:table_name>', methods=['PUT'])
