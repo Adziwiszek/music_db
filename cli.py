@@ -5,7 +5,8 @@ from tests import test_client
 server_url = "http://localhost:5000/"
 
 def add_entry(values, table, db):
-    db.add_entry(table_name=table,values=values)
+    res = db.add_entry(table_name=table,values=values)
+    print(res)
     
 def show_entries(table, db):
     res = db.display_table(table)
@@ -16,13 +17,17 @@ def get_entry(table, db, id):
     print(res)
 
 def delete_entry(table, db, column, value):
-    db.delete_entry(table_name=table, column_name=column, value_to_delete=value)
+    res = db.delete_entry(table_name=table, column_name=column, value_to_delete=value)
+    print(res)
 
-def update_entry(db, table, column_name, new_value,conditions):
-    db.update_entry(table_name=table, column_name=column_name, 
-                    new_value=new_value, conditions=conditions)
+def update_entry(db, table, values):
+    # db.update_entry(table_name=table, column_name=column_name, 
+    #                 new_value=new_value, conditions=conditions)
+    res = db.update_entry(table_name=table, values=values)
+    print(res)
 
-def get_table_columns(tab, args):
+    
+def get_table_columns(tab, args, update=False):
     values = {}
     if tab == 'bands':
         values = {'name':args.band_name}
@@ -35,6 +40,12 @@ def get_table_columns(tab, args):
             'album_name':args.album_name}
     else:
         return f"There's no table {tab}!"
+    if args.id is not None and update:
+        values['id'] = args.id
+        return values
+    elif update:
+        print(f"Missing id!!")
+        return
     return values
 
 def main():
@@ -59,11 +70,7 @@ def main():
     parser_update.add_argument('--album_name', type=str, help='name of an album')
     parser_update.add_argument('--rating', type=int, help='rating of an album, form 0 to 100')
     parser_update.add_argument('--id', help='id of an entry', type=int)
-    # parser_update.add_argument('--column', type=str, help='name of a column whose row will be updated')
-    # parser_update.add_argument('--new_value', help='this is the value that will replace the old one')
-    # parser_update.add_argument('--condition_col', type=str, help='column in which condition_val will be looked for')
-    # parser_update.add_argument('--condition_val', help='row with this value in condition_col will have its value replaced')
-    
+
     parser_delete = subparsers.add_parser('delete', help='delete an entry (currently only by giving its id)')
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
     parser_delete.add_argument('--column', help='entries with given values in this column will be deleted')
@@ -102,11 +109,8 @@ def main():
         else:
             delete_entry('bands', column_name=args.column, value_to_delete=args.value)    
     elif args.action == 'update':
-        conditions = {args.condition_col:args.condition_val}
-        update_entry(db=db, table=tab,
-                     column_name=args.column, 
-                     new_value=args.new_value,
-                     conditions=conditions)
+        values = get_table_columns(tab, args, update=True)
+        update_entry(db,tab,values)
     else:
         print(f"There's no such action as {args.action}!!")
     db.session.close()

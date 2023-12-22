@@ -151,29 +151,18 @@ class Database():
             print(f'Table ({table_name}) does not exist.')
             return
         table = self.get_table(table_name)
+        print(values)
+        entry_to_update = self.session.query(table).filter_by(id=values['id']).first()
         
-        entry_to_update = self.session.query(table).filter_by(id=values.id).first()
         if entry_to_update:
             for key, value in values.items():
-                setattr(entry_to_update, key, value)
+                if value is not None:
+                    setattr(entry_to_update, key, value)
             self.session.commit()
-            return jsonify(f"Updated entry with id: {values.id} in tabl: {table_name}")
+            #updated_entry_id = values['id'
+            return f"Updated entry in tabl: {table_name}"
         else:
-            return jsonify("There is no such entry!!")
-        
-        # conditions_text = text(" AND ".join([f"{key} = :param_{key}" for key in conditions.keys()]))
-        
-        # stmt = update(table).where(conditions_text).values({column_name: new_value})
-
-        # try:
-        #     parameters = {f"param_{key}": value for key, value in conditions.items()}
-        #     parameters[f"param_{column_name}"] = new_value
-        #     self.session.execute(stmt, parameters)
-        #     self.session.commit()
-        #     print(f'Updated entry in the ({table_name}) table.')
-        # except Exception as e:
-        #     self.session.rollback()
-        #     print(f'Error updating entry: {e}')
+            return "There is no such entry!!"
 
     def delete_by_id(self, table_name, del_id):
         table_mapping = {
