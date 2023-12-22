@@ -145,24 +145,35 @@ class Database():
         else:
             print(f'There is no album ({a_name}) in the database')
             
-    def update_entry(self, table_name, column_name, conditions, new_value):
+    # , column_name, conditions, new_value
+    def update_entry(self, table_name, values):
         if not inspect(self.engine).has_table(table_name.lower()):
             print(f'Table ({table_name}) does not exist.')
             return
-        table = Table(table_name.lower(), Base.metadata, autoload_with=self.engine)
-        conditions_text = text(" AND ".join([f"{key} = :param_{key}" for key in conditions.keys()]))
+        table = self.get_table(table_name)
         
-        stmt = update(table).where(conditions_text).values({column_name: new_value})
-
-        try:
-            parameters = {f"param_{key}": value for key, value in conditions.items()}
-            parameters[f"param_{column_name}"] = new_value
-            self.session.execute(stmt, parameters)
+        entry_to_update = self.session.query(table).filter_by(id=values.id).first()
+        if entry_to_update:
+            for key, value in values.items():
+                setattr(entry_to_update, key, value)
             self.session.commit()
-            print(f'Updated entry in the ({table_name}) table.')
-        except Exception as e:
-            self.session.rollback()
-            print(f'Error updating entry: {e}')
+            return jsonify(f"Updated entry with id: {values.id} in tabl: {table_name}")
+        else:
+            return jsonify("There is no such entry!!")
+        
+        # conditions_text = text(" AND ".join([f"{key} = :param_{key}" for key in conditions.keys()]))
+        
+        # stmt = update(table).where(conditions_text).values({column_name: new_value})
+
+        # try:
+        #     parameters = {f"param_{key}": value for key, value in conditions.items()}
+        #     parameters[f"param_{column_name}"] = new_value
+        #     self.session.execute(stmt, parameters)
+        #     self.session.commit()
+        #     print(f'Updated entry in the ({table_name}) table.')
+        # except Exception as e:
+        #     self.session.rollback()
+        #     print(f'Error updating entry: {e}')
 
     def delete_by_id(self, table_name, del_id):
         table_mapping = {

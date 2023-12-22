@@ -22,6 +22,21 @@ def update_entry(db, table, column_name, new_value,conditions):
     db.update_entry(table_name=table, column_name=column_name, 
                     new_value=new_value, conditions=conditions)
 
+def get_table_columns(tab, args):
+    values = {}
+    if tab == 'bands':
+        values = {'name':args.band_name}
+    elif tab == 'albums':
+        values = {'name':args.album_name, 
+                'release_year':args.ryear, 
+                'band_name':args.band_name}
+    elif tab == 'ratings':
+        values = {'value': args.rating, 
+            'album_name':args.album_name}
+    else:
+        return f"There's no table {tab}!"
+    return values
+
 def main():
     parser = argparse.ArgumentParser(description='There are 3 tables currently \
         bands, albums, ratings ')
@@ -38,12 +53,16 @@ def main():
     parser_add.add_argument('--album_name', type=str, help='name of an album')
     parser_add.add_argument('--rating', type=int, help='rating of an album, form 0 to 100')
     
-    parser_update = subparsers.add_parser('update', help='update a value in a row \
-                                          if has some value that matches that of condition_val in condition_col')
-    parser_update.add_argument('--column', type=str, help='name of a column whose row will be updated')
-    parser_update.add_argument('--new_value', help='this is the value that will replace the old one')
-    parser_update.add_argument('--condition_col', type=str, help='column in which condition_val will be looked for')
-    parser_update.add_argument('--condition_val', help='row with this value in condition_col will have its value replaced')
+    parser_update = subparsers.add_parser('update', help='update an entry')
+    parser_update.add_argument('--ryear', type=str, help='release year of an album (in str format)')
+    parser_update.add_argument('--band_name', type=str, help='name of a band')
+    parser_update.add_argument('--album_name', type=str, help='name of an album')
+    parser_update.add_argument('--rating', type=int, help='rating of an album, form 0 to 100')
+    parser_update.add_argument('--id', help='id of an entry', type=int)
+    # parser_update.add_argument('--column', type=str, help='name of a column whose row will be updated')
+    # parser_update.add_argument('--new_value', help='this is the value that will replace the old one')
+    # parser_update.add_argument('--condition_col', type=str, help='column in which condition_val will be looked for')
+    # parser_update.add_argument('--condition_val', help='row with this value in condition_col will have its value replaced')
     
     parser_delete = subparsers.add_parser('delete', help='delete an entry (currently only by giving its id)')
     parser_delete.add_argument('--id', type=int, help='id used for deleting an entry')  
@@ -60,18 +79,7 @@ def main():
         print('asgvjhbk')
     if args.action == 'add':
         # setting values dictionary for add method
-        values = {}
-        if tab == 'bands':
-            values = {'name':args.band_name}
-        elif tab == 'albums':
-            values = {'name':args.album_name, 
-                    'release_year':args.ryear, 
-                    'band_name':args.band_name}
-        elif tab == 'ratings':
-             values = {'value': args.rating, 
-                    'album_name':args.album_name}
-        else:
-            print(f"There's no table {tab}!")
+        values = get_table_columns(tab, args)
         # executing the add function
         if args.api:
             test_client.api_add_entry(base_url=server_url, values=values, table_url=tab) 
