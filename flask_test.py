@@ -12,21 +12,23 @@ def main():
 
 @app.route("/<string:table_name>", methods=['POST'])
 def add_entry(table_name):
-    try:
-        data = request.form.to_dict()
-        db.add_entry(table_name,data)
-        return jsonify(f'added: {data}')
-    except Exception as e:
-        return jsonify({'error': e})
+    if request.method == 'POST':
+        try:
+            data = request.form.to_dict()
+            res_message = db.add_entry(table_name,data)
+            return jsonify(f'added: {data}')
+        except Exception as e:
+            return jsonify({'error': e})
 
 @app.route('/<string:table_name>/<int:id>', methods=['DELETE'])
 def delete_entry_by_id(table_name, id):
-    try:
-        res_message = db.delete_by_id(table_name=table_name, del_id=id)
-        return jsonify({'message': res_message})
-    except:
-        return f"Error while deleting an entry with id: {id} in table: {table_name}"
-
+    if request.method == 'DELETE':
+        try:
+            res_message = db.delete_by_id(table_name=table_name, del_id=id)
+            return jsonify({'message': res_message})
+        except:
+            return f"Error while deleting an entry with id: {id} in table: {table_name}"
+        
 @app.route('/<string:table_name>/<int:id>', methods=['GET'])
 def get_entry_by_id(table_name, id):
     json_res = db.get_entry(table_name=table_name,id=id)

@@ -91,8 +91,7 @@ class Database():
 
         # Check if the table exists
         if not inspect(self.engine).has_table(table_name_lower):
-            print(f'Table ({table_name}) does not exist.')
-            return
+            return f'Table ({table_name}) does not exist.'
         
         # Checking if there are any values missing 
         to_check = []
@@ -104,21 +103,18 @@ class Database():
             to_check = Rating.get_required_columns()
         for col in to_check:
             if values[col] == None:
-                print(f"Couldn't add entry to the database, ({col}) is missing!")
-                return
+                return f"Couldn't add entry to the database, ({col}) is missing!"
             
         # Automatically determine band_id, used when adding albums
         if 'band_id' in values and 'band_name' in values:
-            print("Error: Both 'band_id' and 'band_name' provided. Please provide only one.")
-            return
+            return "Error: Both 'band_id' and 'band_name' provided. Please provide only one."
         elif 'band_name' in values:
             band_name = values.pop('band_name')
             band = self.session.query(Band).filter_by(name=band_name).first()
             if band:
                 values['band_id'] = band.id
             else:
-                print(f'Band ({band_name}) not found in the database.')
-                return
+                return f'Band ({band_name}) not found in the database.'
             
         # handle adding rating
         if 'album_name' in values and 'value' in values:
@@ -133,10 +129,10 @@ class Database():
         try:
             self.session.execute(stmt)
             self.session.commit()
-            print(f'Added entry to the ({table_name}) table.')
+            return f'Added entry to the ({table_name}) table.'
         except Exception as e:
             self.session.rollback()
-            print(f'Error adding entry: {e}')
+            return f'Error adding entry: {e}'
             
     def add_rating(self, a_name, value):
         q_albums = [result[0] for result in self.session.query(Album.name).all()]

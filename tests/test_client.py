@@ -8,12 +8,10 @@ from urllib.parse import urljoin
 #     res = requests.get(target_url)
 #     print(res.json())
 
-def api_add_entry(base_url, table_url, values, id=None):
-    url = None
+def api_add_entry(base_url, table_url, values):
     url = urljoin(base_url, f"{table_url}")
     print(f"connecting to url: {url}")
     try:
-        print(values)
         res = requests.post(url, data=values)
         res.raise_for_status() 
         print(res.json())
