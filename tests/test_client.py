@@ -47,5 +47,7 @@ def api_get_table(base_url, table_name):
         print(res.json())
     except requests.RequestException as e:
         print(f"Error making API request: {e}")
-    
+
+def api_update_entry():
+    ...
 #api_get_by_id(1)

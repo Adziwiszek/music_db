@@ -16,7 +16,7 @@ def add_entry(table_name):
         try:
             data = request.form.to_dict()
             res_message = db.add_entry(table_name,data)
-            return jsonify(f'added: {data}')
+            return jsonify(res_message)
         except Exception as e:
             return jsonify({'error': e})
 
@@ -38,6 +38,11 @@ def get_entry_by_id(table_name, id):
 def get_table(table_name):
     json_res = db.display_table(table_name=table_name)
     return json_res
+
+@app.route('/<string:table_name>/', methods=['GET'])
+def update_entry():
+    ...
+
 
 if __name__ == "__main__":
     db = db_operations.Database()
