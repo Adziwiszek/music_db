@@ -89,24 +89,32 @@ class Database():
         # Convert the table name to lowercase
         table_name_lower = table_name.lower()
 
-        # create a reference to the table
-        table = Table(table_name_lower, Base.metadata, autoload_with=self.engine)
+        if values is None:
+            return f"Error when adding entry, there are no values"
 
         # Check if the table exists
-        if not inspect(self.engine).has_table(table_name_lower):
-            return f'Table ({table_name}) does not exist.'
+        try:
+            if self.get_table(table_name) is None:
+                return f'Table ({table_name_lower}) does not exist.'       
+        except Exception as e:
+            return f"Error checking the table existence {e}"
+        
+        # create a reference to the table
+        table = Table(table_name_lower, Base.metadata, autoload_with=self.engine)
         
         # Checking if there are any values missing 
-        to_check = []
-        if table_name == 'bands':
-            to_check = Band.get_required_columns()
-        elif table_name == 'albums':
-            to_check = Album.get_required_columns()
-        elif table_name == 'ratings':
-            to_check = Rating.get_required_columns()
-        for col in to_check:
-            if values[col] == None:
-                return f"Couldn't add entry to the database, ({col}) is missing!"
+        to_check = self.get_table_columns(table_name)
+        to_check.remove('id')
+        # if table_name == 'bands':
+        #     to_check = Band.get_required_columns()
+        # elif table_name == 'albums':
+        #     to_check = Album.get_required_columns()
+        # elif table_name == 'ratings':
+        #     to_check = Rating.get_required_columns()
+        for val_key in values.keys():
+            if val_key not in to_check:
+                return f"Can't add the entry to the database, there's no column {val_key} in table {table_name}"
+        
             
         # Automatically determine band_id, used when adding albums
         if 'band_id' in values and 'band_name' in values:
