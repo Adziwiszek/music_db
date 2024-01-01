@@ -11,39 +11,33 @@ class TestDatabase(unittest.TestCase):
         self.mock_engine = MagicMock()
         self.mock_session = MagicMock()
 
-    def test_add_entry_success(self):
+    def test_add_entry(self):
         # Create an instance of your database class with the mock engine and session
         db_instance = Database()
         db_instance.engine = self.mock_engine
         db_instance.session = self.mock_session
 
         with patch('db_operations.Band') as mock_band_class:
-            #mock_band_instance = MagicMock()
-            #mock_band_instance.id = 1
-            #mock_band_class.query.filter_by.return_value.first.return_value = mock_band_instance
-            
-            #self.mock_session.execute.return_value = MagicMock()
-            #self.mock_session.commit.return_value = MagicMock()
-
             result = db_instance.add_entry('bands', {'name': 'Test Band'})
-
-            self.assertEqual(result, "Added entry to the (bands) table.")
-
-            #self.mock_session.execute.assert_called_once()
-            #self.mock_session.commit.assert_called_once()
-
-    def test_add_entry_failure(self):
-        # Create an instance of your database class with the mock engine and session
-        db_instance = Database()
-        db_instance.engine = self.mock_engine
-        db_instance.session = self.mock_session
-
-        with patch('db_operations.Band') as mock_band_class:
             result_no_table = db_instance.add_entry('wrong_table', {'name': 'Test Band'})
             result_wrong_column = db_instance.add_entry('bands', {'wrong_col': 'Test Band'})
             
             self.assertEqual(result_no_table, "Table (wrong_table) does not exist.")
             self.assertEqual(result_wrong_column, "Can't add the entry to the database, there's no column wrong_col in table bands")
+            self.assertEqual(result, "Added entry to the (bands) table.")
 
+    def test_update_entry(self):
+        # Create an instance of your database class with the mock engine and session
+        db_instance = Database()
+        db_instance.engine = self.mock_engine
+        db_instance.session = self.mock_session
+
+        with patch('db_operations.Band') as mock_band_class:
+            db_instance.add_entry('bands', {'name': 'first_test'})
+            result = db_instance.update_entry('bands', {'id': 1, 'name':'second_test'})
+            self.assertEqual(result, "Updated entry in table: bands")
+            
+
+    
 if __name__ == '__main__':
     unittest.main()

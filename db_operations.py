@@ -160,7 +160,9 @@ class Database():
             print(f'Table ({table_name}) does not exist.')
             return
         table = self.get_table(table_name)
-        print(values)
+        if 'id' not in values.keys():
+            return f"id column is missing"
+        #print(values)
         entry_to_update = self.session.query(table).filter_by(id=values['id']).first()
         
         if entry_to_update:
