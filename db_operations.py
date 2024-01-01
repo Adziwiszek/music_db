@@ -156,21 +156,19 @@ class Database():
             return f'There is no album ({a_name}) in the database'
             
     def update_entry(self, table_name, values):
-        if not inspect(self.engine).has_table(table_name.lower()):
-            print(f'Table ({table_name}) does not exist.')
-            return
+        if self.get_table(table_name) is None:
+            return f'Table ({table_name}) does not exist.'
         table = self.get_table(table_name)
         if 'id' not in values.keys():
             return f"id column is missing"
-        #print(values)
         entry_to_update = self.session.query(table).filter_by(id=values['id']).first()
-        
+        #print(self.display_table(table_name=table_name, return_json=False))
         if entry_to_update:
+            #print(values['name'])
             for key, value in values.items():
                 if value is not None:
                     setattr(entry_to_update, key, value)
             self.session.commit()
-            #updated_entry_id = values['id'
             return f"Updated entry in table: {table_name}"
         else:
             return "There is no such entry!!"

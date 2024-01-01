@@ -16,8 +16,9 @@ def get_entry(table, db, id):
     res = db.get_entry(table,id)
     print(res)
 
-def delete_entry(table, db, column, value):
-    res = db.delete_entry(table_name=table, column_name=column, value_to_delete=value)
+def delete_entry(table, db, id):
+    #res = db.delete_entry(table_name=table, column_name=column, value_to_delete=value)
+    res = db.delete_by_id(table_name=table, del_id=id)
     print(res)
 
 def update_entry(db, table, values):
@@ -106,7 +107,8 @@ def main():
         if args.api:
             client.api_delete_entry_by_id(base_url=server_url, table_url=tab, id=args.id)
         else:
-            delete_entry('bands', column_name='id', value_to_delete=args.id)    
+            #delete_entry('bands', column_name='id', value_to_delete=args.id)    
+            delete_entry(table=tab, db=db, id=args.id)
     elif args.action == 'update':
         values = get_table_columns(tab, args, update=True)
         if args.api:
