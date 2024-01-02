@@ -56,9 +56,9 @@ class Database():
                 json_data = json.dumps(target_data)
                 return json_data
             else:
-                return print(f'there is no item with id ({id}) in the database')
+                return f'there is no item with id ({id}) in the database'
         else:
-            return print(f'there is no ({table_name}) table in the database')
+            return f'there is no ({table_name}) table in the database'
 
     def display_table(self, table_name, return_json=True):
         print(f'Displaying {table_name} table')
@@ -118,7 +118,7 @@ class Database():
         #     to_check = Rating.get_required_columns()
         for val_key in values.keys():
             if val_key not in to_check:
-                return f"Can't add the entry to the database, 
+                return f"Can't add the entry to the database, \
             there's no column {val_key} in table {table_name}"
 
         # Automatically determine band_id, used when adding albums

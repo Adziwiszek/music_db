@@ -6,34 +6,77 @@ server_url = "http://localhost:5000/"
 
 
 def add_entry(values, table, db):
+    '''
+    Calls add_entry method from Database class from db_operations, that adds the entry to the data base.
+    Parameters:
+    - values (dictionary): Dict of values of newly added row.
+    - table (string): Name of a table where.
+    - db (Database): Reference to the Database class.
+    '''
     res = db.add_entry(table_name=table, values=values)
     print(res)
 
 
 def show_entries(table, db):
-    res = db.display_table(table)
+    '''
+    Calls show_entries method from Database class from db_operations, that returns whole table.
+    Parameters:
+    - table (string): Name of a table.
+    - db (Database): Reference to the Database class.
+    - return_json (bool), optional: Specifies if result will be in json format (True) or in dict format (False).
+    Returns:
+    - list or json file with content of a table.
+    '''
+    res = db.display_table(table, return_json=False)
     print(res)
 
 
 def get_entry(table, db, id):
+    '''
+    Calls get_entry method from Database class from db_operations, that returns the entry with a given id.
+    Parameters:
+    - table (string): Name of a table.
+    - db (Database): Reference to the Database class. 
+    - id (int): Id of an entry.
+    Returns:
+    - json: Entry with given id, from given table
+    '''
     res = db.get_entry(table, id)
     print(res)
 
 
 def delete_entry(table, db, id):
-    # res = db.delete_entry(table_name=table,
-    # column_name=column, value_to_delete=value)
+    '''
+    Calls get_entry method from Database class from db_operations, that deletes the entry with a given id.
+    Parameters:
+    - table (string): Name of a table.
+    - db (Database): Reference to the Database class.
+    - id (int): Id of an entry that will be deleted.
+    '''
     res = db.delete_by_id(table_name=table, del_id=id)
     print(res)
 
 
 def update_entry(db, table, values):
+    '''
+    Calls get_entry method from Database class from db_operations, that updates the entry with a given id.
+    Parameters:
+    - table (string): Name of a table.
+    - db (Database): Reference to the Database class.
+    - id (int): Id of an entry that will be updated.
+    '''
     res = db.update_entry(table_name=table, values=values)
     print(res)
 
 
 # used to get arguments with argparse from command line
 def get_table_columns(tab, args, update=False):
+    '''
+    Used to get arguments with argparse from command line.
+    Parameters:
+    - tab (string): Name of a table
+    - args (argparse.Namespace): Re
+    '''
     values = {}
     if tab == 'bands':
         values = {'name': args.band_name}
@@ -57,6 +100,7 @@ def get_table_columns(tab, args, update=False):
 
 
 def main():
+    ''''''
     parser = argparse.ArgumentParser(description='There are 3 tables currently \
         bands, albums, ratings ')
     db = db_operations.Database()
@@ -95,6 +139,7 @@ def main():
     parser_show.add_argument('--id', help='id of an entry', type=int)
 
     args = parser.parse_args()
+    print(f'args typ: {type(args)}')
 
     tab = args.table[0]
     if args.action == '--help':
