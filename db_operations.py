@@ -13,16 +13,26 @@ import json
 
 
 class Base(DeclarativeBase):
+    '''Base class for database tables.'''
     pass
 
 
 class Database():
+    '''Class for database'''
+
     def __init__(self):
+        '''Init method. Creates engine and starts session'''
         self.engine = create_engine('sqlite:///music_database.db', echo=False)
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
 
     def get_table(self, table_name):
+        '''Returns a reference to a table in the database
+            Parameters:
+            table_name (string): name of a table
+            Returns:
+            reference to a table in database if it exists
+            or None if there is no table with name table_name'''
         table_mapping = {
             'bands': Band,
             'ratings': Rating,
@@ -34,6 +44,12 @@ class Database():
             return None
 
     def get_table_columns(self, table_name):
+        '''Returns a list of names if columns in a table.
+            Parameters:
+            table_name (string): name of a table
+            Returns:
+            list of names of columns in a table
+            or None if no such table exists'''
         table_mapping = {
             "bands": ['id', 'name'],
             "albums": ['id', 'name', 'release_year', 'band_id'],
@@ -42,9 +58,17 @@ class Database():
         if table_name in table_mapping.keys():
             return table_mapping[table_name]
         else:
-            return print(f'There is no such table, ({table_name})')
+            return None
 
     def get_entry(self, table_name, id):
+        '''Gets an entry from the database
+            Parameters:
+            table_name (string): name of a table
+            id (int): id of an entry
+            Returns:
+            json: entry with given id, from given table
+            or json with error message if there is no entry with that id
+            or there is no such table'''
         target_table = self.get_table(table_name=table_name)
         if target_table:
             target_entry = self.session.query(
@@ -61,7 +85,13 @@ class Database():
             return f'there is no ({table_name}) table in the database'
 
     def display_table(self, table_name, return_json=True):
-        print(f'Displaying {table_name} table')
+        '''Returns content of a table
+            Parameters:
+            table_name (string): name of a table
+            Returns:
+            json: content of the table
+            or message when there's no content in the table'''
+        # print(f'Displaying {table_name} table')
 
         table_name_lower = table_name.lower()
         table = Table(table_name_lower, Base.metadata,
@@ -73,8 +103,8 @@ class Database():
         q_all = self.session.query(table).all()
 
         if not q_all:
-            print(f"No records found in {table_name}.")
-            return
+            res = json.dumps(list(f"No records found in {table_name}."))
+            return res
 
         json_data_list = []
         columns = table.columns.keys()
@@ -90,6 +120,12 @@ class Database():
             return json_data_list
 
     def add_entry(self, table_name, values):
+        '''Add an entry to the database.
+            Parameters:
+            table_name (string): name of a table
+            values (dictionary): dictionary with content of new entry
+            Returns:
+            string: message with status of this action (succes or error)'''
         # Convert the table name to lowercase
         table_name_lower = table_name.lower()
 
@@ -151,6 +187,12 @@ class Database():
             return f'Error adding entry: {e}'
 
     def add_rating(self, a_name, value):
+        '''Help method for add_entry that handles adding rating.
+            Parameters:
+            a_name (string): name of an album
+            value (int): rating of the album
+            Returns:
+            string: message with status of this action (succes or error)'''
         q_albums = [result[0]
                     for result in self.session.query(Album.name).all()]
         if a_name in q_albums:
@@ -163,6 +205,12 @@ class Database():
             return f'There is no album ({a_name}) in the database'
 
     def update_entry(self, table_name, values):
+        '''Updates entry in the database
+            Parameters:
+            table_name (string): name of a table
+            values (dictionary): dictionary with new content of an entry
+            Returns:
+            string: message with status of this action (succes or error)'''
         if self.get_table(table_name) is None:
             return f'Table ({table_name}) does not exist.'
         table = self.get_table(table_name)
@@ -182,6 +230,12 @@ class Database():
             return "There is no such entry!!"
 
     def delete_by_id(self, table_name, del_id):
+        '''Deletes an entry with a given id
+            Parameters:
+            table_name (string): name of a table
+            del_id (int): id of an entry
+            Returns:
+            string: message with status of this action (succes or error)'''
         table_mapping = {
             'bands': Band,
             'ratings': Rating,
@@ -201,6 +255,13 @@ class Database():
             return f"There's no table ({table_name})"
 
     def delete_entry(self, table_name, column_name, value_to_delete):
+        '''Deletes an entry(ies) with value_to_delete in column_name
+            Parameters:
+            table_name (string): name of a table
+            column_name (string): name of a column
+            value_to_delete (): entries with this value in column_name will be delted
+            Returns:
+            string: message with status of this action (succes or error)'''
         target_table = self.get_table(table_name)
         if target_table:
             try:
@@ -208,16 +269,12 @@ class Database():
                 query = query.filter(
                     getattr(target_table, column_name) == value_to_delete)
 
-                # Execute the delete operation
                 query.delete()
-
-                # Commit changes to the database
                 self.session.commit()
 
                 print(
                     f"Entry with {column_name}={value_to_delete} deleted successfully.")
             except Exception as e:
-                # Handle exceptions (e.g., SQLAlchemyError, IntegrityError) appropriately
                 print(f"Error deleting entry: {e}")
                 self.session.rollback()
         else:
@@ -225,6 +282,12 @@ class Database():
 
 
 class Rating(Base):
+    '''Rating table in database
+        Columns:
+        id (int): id of the rating
+        album_id (int): id of album that this rating rates
+        album: reference to the album that this rating rates
+        value (int): rating (0-100)'''
     __tablename__ = 'ratings'
     id = Column(Integer, primary_key=True)
     album_id = Column(Integer, ForeignKey('albums.id'))
@@ -236,6 +299,11 @@ class Rating(Base):
 
 
 class Band(Base):
+    '''Band table in database
+        Columns:
+        id (int): id of the band
+        name (string): name of the band
+        albums: reference to this bands albums'''
     __tablename__ = "bands"
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -246,6 +314,14 @@ class Band(Base):
 
 
 class Album(Base):
+    '''Album table in database
+        Columns:
+        id (int): id of the ablum
+        name (string): name of the album
+        release_year (string): release year
+        band_id (int): id of the band that made this album
+        band: reference to the band
+        rating: reference to the ratings'''
     __tablename__ = "albums"
     id = Column(Integer, primary_key=True)
     name = Column(Text)

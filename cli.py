@@ -100,7 +100,26 @@ def get_table_columns(tab, args, update=False):
 
 
 def main():
-    ''''''
+    '''
+    usage: cli.py [-h] [--api] table {add,update,delete,show} ...
+
+    There are 3 tables currently bands, albums, ratings
+
+    positional arguments:
+    table
+
+    options:
+    -h, --help            show this help message and exit
+    --api                 specifies if user wants to use api or not
+
+    Actions:
+    {add,update,delete,show}
+    Available actions
+    add                 add an entry
+    update              update an entry
+    delete              delete an entry (currently only by giving its id)
+    show                displays a table
+    '''
     parser = argparse.ArgumentParser(description='There are 3 tables currently \
         bands, albums, ratings ')
     db = db_operations.Database()

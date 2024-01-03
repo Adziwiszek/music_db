@@ -7,8 +7,10 @@ sys.path.append('../music_db')
 
 
 class TestDatabase(unittest.TestCase):
+    '''Class for tests for db_operations'''
+
     def setUp(self):
-        # Create a mock engine and session for testing
+        '''SetUp method for tests. Creates mock data base for testing.'''
         self.mock_engine = MagicMock()
         self.mock_session = MagicMock()
 
@@ -17,10 +19,12 @@ class TestDatabase(unittest.TestCase):
         self.db_instance.session = self.mock_session
 
     def tearDown(self) -> None:
+        '''Method for closing '''
         self.db_instance.session.close()
         return super().tearDown()
 
     def test_add_entry(self):
+        '''Tests for add_entry. Method tests cases for correct adding, wrong table name and wrong column.'''
         with patch('db_operations.Band') as mock_band_class:
             result = self.db_instance.add_entry('bands', {'name': 'Test Band'})
             result_no_table = self.db_instance.add_entry(
@@ -35,6 +39,7 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(result, "Added entry to the (bands) table.")
 
     def test_update_entry(self):
+        '''Tests for update_entry. Method tests cases for correct updating, missing id column and wrong table name'''
         with patch('db_operations.Database') as mock_db_class:
             self.db_instance.add_entry('bands', {'name': 'first_test'})
             # print(db_instance.display_table(table_name='bands', return_json=False))
@@ -58,4 +63,5 @@ class TestDatabase(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    '''Main function, runs tests'''
     unittest.main()
